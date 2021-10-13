@@ -1,15 +1,15 @@
 import json
 import re
 
-import opencc
+from opencc import OpenCC
 
 from name import Name
 from stroke_number import get_stroke_number
 
 # 简体转繁体
-s2tConverter = opencc.OpenCC('s2t.json')
+s2tConverter = OpenCC('s2t')
 # 繁体转简体
-t2sConverter = opencc.OpenCC('t2s.json')
+t2sConverter = OpenCC('t2s')
 
 
 def get_source(source, validate, stroke_list):
@@ -240,6 +240,11 @@ def check_name_resource(title, name, string_list):
             index0 = sentence.index(name[1])
             index1 = sentence.index(name[2])
             if index0 < index1:
+                # return {'resource': {
+                #     'title': title,
+                #     'sentence': sentence.strip().replace(name[1], '「' + name[1] + '」') \
+                #       .replace(name[2], '「' + name[2] + '」') + '\n'
+                # }}
                 print(title)
                 print(sentence.strip().replace(name[1], '「' + name[1] + '」') \
                       .replace(name[2], '「' + name[2] + '」') + '\n')

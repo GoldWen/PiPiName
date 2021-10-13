@@ -11,10 +11,15 @@
 安装简繁体转换库 OpenCC：
 
 ```
-pip install opencc
-```
+pip install opencc-python-reimplemented
 
-## 2. 配置参数
+pip install flask
+```
+## 2.接口
+/rest/namer/detail
+/rest/namer/list
+
+## 3. 配置参数
 
 打开 config.py，进行参数配置：
 

@@ -1,4 +1,4 @@
-import opencc
+from opencc import OpenCC
 
 from stroke_number import get_stroke_number
 
@@ -16,7 +16,7 @@ stroke_list = list()
 def get_stroke_list(last_name, allow_general):
     print(">>计算笔画组合...")
     # 姓氏转繁体
-    converter = opencc.OpenCC('s2t.json')
+    converter = OpenCC('s2t')
     last_name = converter.convert(last_name)
     n = get_stroke_number(last_name)
     for i in range(1, 81):
@@ -96,7 +96,7 @@ def check_wuge_config(name):
     if len(name) != 3:
         return
     # 姓名转繁体
-    converter = opencc.OpenCC('s2t.json')
+    converter = OpenCC('s2t')
     complex_name = converter.convert(name)
     xing = get_stroke_number(complex_name[0])
     ming1 = get_stroke_number(complex_name[1])
@@ -113,6 +113,16 @@ def check_wuge_config(name):
     wai = zong - ren + 1
     # 三才配置
     sancai_config = get_sancai_config([tian, ren, di])
+    config = {'wuge': {
+        'complex_name': str(xing) + " " + str(ming1) + " " + str(ming2),
+        '天格': str(tian),
+        '人格': str(ren) + "\t" + get_stroke_type(ren),
+        '地格': str(di) + "\t" + get_stroke_type(di),
+        '总格': str(zong) + "\t" + get_stroke_type(zong),
+        '外格': str(wai) + "\t" + get_stroke_type(wai),
+        '三才': sancai_config + "\t" + get_sancai_type(sancai_config)
+    }}
+    return config
     # 输出结果
     print("\n")
     print(name + "\n")
