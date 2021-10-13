@@ -17,9 +17,33 @@ pip install flask
 ```
 ## 2.接口
 /rest/namer/detail
+
 /rest/namer/list
 
-## 3. 配置参数
+## 3.nginx配置
+```server {
+  listen 9020;
+  server_name 127.0.0.1;
+  access_log off;
+  index index.html index.htm index.php;
+  root /var/www/html/name;
+
+  #error_page 404 /404.html;
+  #error_page 502 /502.html;
+  location /rest/ {
+        proxy_pass      http://127.0.0.1:9021/rest/;
+        proxy_set_header        Host $host;
+        proxy_set_header        X-Real-IP  $remote_addr;
+        proxy_set_header        X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header        X-Forwarded-Proto  $scheme;
+        proxy_connect_timeout   60;
+        proxy_read_timeout 600;
+        proxy_send_timeout      600;
+  }
+}
+```
+
+## 4. 配置参数
 
 打开 config.py，进行参数配置：
 
