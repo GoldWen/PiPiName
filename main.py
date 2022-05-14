@@ -88,5 +88,15 @@ def namelist():
         data = dataNames
         resu = {'code': 200, 'message': 'success', 'data': data}
         return json.dumps(resu, ensure_ascii=False)
+
+
+@server.route('/rest/healthy/test', methods=['get', 'post'])
+def test_healthy():
+    healthy = request.args.get('healthy')
+    result = {'code': 200, 'message': 'success', 'data': healthy}
+    return json.dumps(result, ensure_ascii=False)
+
+
+
 if __name__ == '__main__':
     server.run(debug=True, port=9021,host='0.0.0.0')# 指定端口、host,0.0.0.0代表不管几个网卡，任何ip都可以访问
