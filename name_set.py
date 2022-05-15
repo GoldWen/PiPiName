@@ -5,6 +5,10 @@ from opencc import OpenCC
 
 from name import Name
 from stroke_number import get_stroke_number
+# from resource_cache import zjw
+
+from resource_cache import zhouyi_line_list
+from resource_cache import exist_name_lib_dict as exist_name
 
 # 简体转繁体
 s2tConverter = OpenCC('s2t')
@@ -13,10 +17,11 @@ t2sConverter = OpenCC('t2s')
 
 
 def get_source(source, validate, stroke_list):
-    exist_name = dict()
-    if validate:
-        print('>>加载名字库...')
-        get_name_valid('Chinese_Names', exist_name)
+    print(stroke_list)
+    # exist_name = dict()
+    # if validate:
+    #     print('>>加载名字库...')
+    #     get_name_valid('Chinese_Names', exist_name)
 
     names = set()
     # 默认
@@ -36,8 +41,9 @@ def get_source(source, validate, stroke_list):
         get_name_json('论语', names, 'paragraphs', stroke_list)
     # 周易
     elif source == 4:
-        print('>>加载周易...')
-        get_name_txt('周易', names, stroke_list)
+        print('>>从周易生成名字...一共', len(zhouyi_line_list), '行')
+        # get_name_txt('周易', names, stroke_list)
+        get_name_txt_from_lines(zhouyi_line_list, names, stroke_list)
     # 唐诗
     elif source == 5:
         print('>>加载唐诗...')
@@ -74,6 +80,7 @@ def get_intersect(names, exist_name):
     return result
 
 
+# deprecated
 # 加载名字库
 def get_name_valid(path, exist_names):
     with open('data/' + path + '.dat', encoding='utf-8') as f:
@@ -133,6 +140,22 @@ def get_name_txt(path, names, stroke_list):
                 continue
             string_list = re.split('！？，。,.?! \n', string)
             check_and_add_names(names, string_list, stroke_list)
+
+def get_name_txt_from_lines(line_list, names, stroke_list):
+    size = len(line_list)
+    print('行数',size)
+    progress = 0
+    for i in range(0, size):
+        # 生成进度
+        if (i + 1) * 100 / size - progress >= 10:
+            progress += 10
+            print('>>正在生成名字...' + str(progress) + '%')
+        # 转繁体
+        string = s2tConverter.convert(line_list[i])
+        if re.search(r'\w', string) is None:
+            continue
+        string_list = re.split('！？，。,.?! \n', string)
+        check_and_add_names(names, string_list, stroke_list)
 
 
 def get_name_json(path, names, column, stroke_list):

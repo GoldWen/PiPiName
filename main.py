@@ -13,6 +13,7 @@ from name_set import check_resource, get_source
 from wuge import check_wuge_config, get_stroke_list
 import flask, json
 from flask import request
+from resource_cache import init_libs
 
 server = flask.Flask(__name__)
 
@@ -99,4 +100,9 @@ def test_healthy():
 
 
 if __name__ == '__main__':
+    print("start app")
+    init_libs()
+    print("libs initialized")
     server.run(debug=True, port=9021,host='0.0.0.0')# 指定端口、host,0.0.0.0代表不管几个网卡，任何ip都可以访问
+
+
