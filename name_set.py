@@ -9,6 +9,8 @@ from stroke_number import get_stroke_number
 
 from resource_cache import zhouyi_line_list
 from resource_cache import exist_name_lib_dict as exist_name
+from config import min_stroke_count, max_stroke_count, allow_general, name_validate
+
 
 # 简体转繁体
 s2tConverter = OpenCC('s2t')
@@ -16,7 +18,7 @@ s2tConverter = OpenCC('s2t')
 t2sConverter = OpenCC('t2s')
 
 
-def get_source(source, validate, stroke_list):
+def get_source(source, validate, stroke_list, gender):
     print(stroke_list)
     # exist_name = dict()
     # if validate:
@@ -43,7 +45,7 @@ def get_source(source, validate, stroke_list):
     elif source == 4:
         print('>>从周易生成名字...一共', len(zhouyi_line_list), '行')
         # get_name_txt('周易', names, stroke_list)
-        get_name_txt_from_lines(zhouyi_line_list, names, stroke_list)
+        get_name_txt_from_lines(zhouyi_line_list, names, stroke_list, gender)
     # 唐诗
     elif source == 5:
         print('>>加载唐诗...')
@@ -141,21 +143,22 @@ def get_name_txt(path, names, stroke_list):
             string_list = re.split('！？，。,.?! \n', string)
             check_and_add_names(names, string_list, stroke_list)
 
-def get_name_txt_from_lines(line_list, names, stroke_list):
+def get_name_txt_from_lines(line_list, names, stroke_list, gender):
     size = len(line_list)
     print('行数',size)
     progress = 0
     for i in range(0, size):
+    # for i in range(0, 50):       
         # 生成进度
         if (i + 1) * 100 / size - progress >= 10:
             progress += 10
             print('>>正在生成名字...' + str(progress) + '%')
-        # 转繁体
-        string = s2tConverter.convert(line_list[i])
+        string = line_list[i]
         if re.search(r'\w', string) is None:
             continue
         string_list = re.split('！？，。,.?! \n', string)
-        check_and_add_names(names, string_list, stroke_list)
+        # print('string_list', string_list)
+        check_and_add_names(names, string_list, stroke_list, gender),
 
 
 def get_name_json(path, names, column, stroke_list):
@@ -175,25 +178,47 @@ def get_name_json(path, names, column, stroke_list):
                 check_and_add_names(names, string_list, stroke_list)
 
 
-def check_and_add_names(names, string_list, stroke_list):
+def check_and_add_names(names, string_list, stroke_list, gender):
     for sentence in string_list:
         sentence = sentence.strip()
-        # 转换笔画数
-        strokes = list()
-        for ch in sentence:
-            if is_chinese(ch):
-                strokes.append(get_stroke_number(ch))
-            else:
-                strokes.append(0)
-        # 判断是否包含指定笔画数
-        for stroke in stroke_list:
-            if stroke[0] in strokes and stroke[1] in strokes:
-                index0 = strokes.index(stroke[0])
-                index1 = strokes.index(stroke[1])
-                if index0 < index1:
-                    name0 = sentence[index0]
-                    name1 = sentence[index1]
-                    names.add(Name(name0 + name1, sentence, ''))
+        check_and_add_names_from_sentence(names, sentence, stroke_list, gender)
+
+
+def check_and_add_names_from_sentence(names, sentence, stroke_list, gender):
+    # 转换笔画数
+    strokes = list()
+    for ch in sentence:
+        if is_chinese(ch):
+            strokes.append(get_stroke_number(ch))
+        else:
+            strokes.append(0)
+    # 判断是否包含指定笔画数
+    for stroke in stroke_list:
+        if stroke[0] in strokes and stroke[1] in strokes:
+            index0 = strokes.index(stroke[0])
+            index1 = strokes.index(stroke[1])
+            if index0 < index1:
+                name0 = sentence[index0]
+                name1 = sentence[index1]
+                name = Name(name0 + name1, sentence, '')
+                print("name:", name.first_name, name.stroke_number1, name.stroke_number2)
+                
+                # 如果简体的笔画数超出限定范围，则不要
+                if name.stroke_number1 < min_stroke_count and name.stroke_number1 > max_stroke_count and \
+                    name.stroke_number2 < min_stroke_count and name.stroke_number2 > max_stroke_count:
+                    continue
+                
+                # 性别过滤
+                if name_validate and gender != "" and name.gender != gender and name.gender != "双" and name.gender != "未知":
+                    continue
+
+                # 不喜欢字过滤
+                if contain_bad_word(name.first_name):
+                    continue
+                
+                names.add(name)
+                
+
 
 
 # 判断是否为汉字
@@ -271,3 +296,10 @@ def check_name_resource(title, name, string_list):
                 print(title)
                 print(sentence.strip().replace(name[1], '「' + name[1] + '」') \
                       .replace(name[2], '「' + name[2] + '」') + '\n')
+
+
+def contain_bad_word(first_name):
+    for word in first_name:
+        if word in dislike_words:
+            return True
+    return False

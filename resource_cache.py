@@ -34,7 +34,7 @@ def init_zhouyi_text():
     print('>>加载周易文本...')
 
     global zhouyi_line_list
-    with open('data/' + '周易' + '.txt', encoding='utf-8') as f:
+    with open('data/' + '周易_繁' + '.txt', encoding='utf-8') as f:
         line_list = f.readlines()
         size = len(line_list)
         for i in range(0, size):
