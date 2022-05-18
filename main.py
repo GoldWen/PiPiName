@@ -9,14 +9,17 @@ FilePath: \PiPiName\main.py
 from config import name_source, last_name, dislike_words, \
     min_stroke_count, max_stroke_count, allow_general, name_validate, \
     check_name, check_name_resource
-from name_set import check_resource, get_source
+from name_set import check_resource, get_source, get_names
 from wuge import check_wuge_config, get_stroke_list
-import flask, json
+import flask
+import json
 from flask import request
 from resource_cache import init_libs
 from tool import convert_zhouyi_s2c
+from name_condition import NameCondition
 
 server = flask.Flask(__name__)
+
 
 def contain_bad_word(first_name):
     for word in first_name:
@@ -26,6 +29,8 @@ def contain_bad_word(first_name):
 
 # server.config['JSON_AS_ASCII'] = False
 # @server.route()可以将普通函数转变为服务 登录接口的路径、请求方式
+
+
 @server.route('/rest/namer/detail', methods=['get', 'post'])
 def nameDetail():
     checkName = request.args.get('checkName')
@@ -37,21 +42,24 @@ def nameDetail():
     #     ip = request.META.get("REMOTE_ADDR")
     # resource = check_resource(checkName)
     # print(resource)
-    ##模式，有w和a，w就是写模式，每次都会重新写日志，覆盖之前的日志
-    #a是追加模式，默认如果不写的话，就是追加模式
-    file_handle=open('log/detail.txt',mode='a',encoding='utf-8')
+    # 模式，有w和a，w就是写模式，每次都会重新写日志，覆盖之前的日志
+    # a是追加模式，默认如果不写的话，就是追加模式
+    file_handle = open('log/detail.txt', mode='a', encoding='utf-8')
     file_handle.write('api:/rest/namer/detail'+'；ip:'+'；姓名:'+checkName+'；\n')
     resu = {'code': 200, 'message': 'success', 'data': wuge}
     return json.dumps(resu, ensure_ascii=False)
+
 
 @server.route('/rest/namer/list', methods=['get', 'post'])
 def namelist():
     lastName = request.args.get('lastName')
     gender = request.args.get('gender')
     nameSource = request.args.get('nameSource')
+    count = request.args.get('count')
     ip = request.remote_addr
-    file_handle=open('log/list.txt',mode='a',encoding='utf-8')
-    file_handle.write('api:/rest/namer/list'+'；ip:'+ip+'；姓名:'+lastName+'；性别:'+gender+'；古诗词来源:'+nameSource+ '；\n')
+    file_handle = open('log/list.txt', mode='a', encoding='utf-8')
+    file_handle.write('api:/rest/namer/list'+'；ip:'+ip+'；姓名:' +
+                      lastName+'；性别:'+gender+'；古诗词来源:'+nameSource + '；\n')
     # if len(check_name) == 3:
     #     # 查看姓名配置
     #     check_wuge_config(check_name)
@@ -62,10 +70,12 @@ def namelist():
     # 起名
     names = []
     dataNames = []
+    nameCondition = NameCondition(lastName, gender, nameSource, count)
+    print('请求参数:', nameCondition.lastName, nameCondition.gender, nameCondition.nameSource, nameCondition.count)
     with open("names.txt", "w+", encoding='utf-8') as f:
-        for i in get_source(int(nameSource), name_validate, get_stroke_list(lastName, allow_general), gender):
-
-            ### 条件过滤已经在生成名字的过程中处理了，这里不再过滤
+        # for i in get_source(int(nameSource), name_validate, get_stroke_list(lastName, allow_general), gender):
+        for i in get_names(nameCondition):
+            # 条件过滤已经在生成名字的过程中处理了，这里不再过滤
             # if i.stroke_number1 < min_stroke_count or i.stroke_number1 > max_stroke_count or \
             #         i.stroke_number2 < min_stroke_count or i.stroke_number2 > max_stroke_count:
             #     # 笔画数过滤
@@ -102,10 +112,9 @@ def test_healthy():
     return json.dumps(result, ensure_ascii=False)
 
 
-
 if __name__ == '__main__':
     print("start app")
     init_libs()
     print("libs initialized")
-    server.run(debug=True, port=9021,host='0.0.0.0')# 指定端口、host,0.0.0.0代表不管几个网卡，任何ip都可以访问
-
+    # 指定端口、host,0.0.0.0代表不管几个网卡，任何ip都可以访问
+    server.run(debug=True, port=9021, host='0.0.0.0')
