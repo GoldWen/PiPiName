@@ -55,7 +55,9 @@ def namelist():
     lastName = request.args.get('lastName')
     gender = request.args.get('gender')
     nameSource = request.args.get('nameSource')
-    count = request.args.get('count')
+    count = int(request.args.get('count'))
+    if count == 5:
+        print('count is ', count)
     ip = request.remote_addr
     file_handle = open('log/list.txt', mode='a', encoding='utf-8')
     file_handle.write('api:/rest/namer/list'+'；ip:'+ip+'；姓名:' +

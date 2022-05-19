@@ -53,7 +53,10 @@ def get_name_txt_from_lines(line_list, names, nameCondition):
             continue
         string_list = re.split('！？，。,.?! \n', string)
         # print('string_list', string_list)
-        check_and_add_names(names, string_list, stroke_list, nameCondition)       
+        check_and_add_names(names, string_list, stroke_list, nameCondition)
+        if len(names) == nameCondition.count:
+            break
+        
 
 
 def get_source(source, validate, stroke_list, gender):
@@ -182,10 +185,6 @@ def get_name_txt(path, names, stroke_list):
             if re.search(r'\w', string) is None:
                 continue
             string_list = re.split('！？，。,.?! \n', string)
-            check_and_add_names(names, string_list, stroke_list)
-
-
-
 
 
 def get_name_json(path, names, column, stroke_list):
@@ -202,19 +201,21 @@ def get_name_json(path, names, column, stroke_list):
                 # 转繁体
                 string = s2tConverter.convert(string)
                 sentences = re.split('！？，。,.?! \n', string)
-                check_and_add_names(names, sentences,  stroke_list, nameCondition)
+                check_and_add_names(
+                    names, sentences,  stroke_list, nameCondition)
 
 
 def check_and_add_names(names, sentences, stroke_list, nameCondition):
     for sentence in sentences:
         sentence = sentence.strip()
-        check_and_add_names_from_sentence(names, sentence, stroke_list, nameCondition)
+        check_and_add_names_from_sentence(
+            names, sentence, stroke_list, nameCondition)
         if len(names) == nameCondition.count:
             break
 
 
 def check_and_add_names_from_sentence(names, sentence, stroke_list, nameCondition):
-    gender=nameCondition.gender
+    gender = nameCondition.gender
     # 转换笔画数
     strokes = list()
     for ch in sentence:
@@ -230,29 +231,38 @@ def check_and_add_names_from_sentence(names, sentence, stroke_list, nameConditio
             if index0 < index1:
                 name0 = sentence[index0]
                 name1 = sentence[index1]
-                name = Name(name0 + name1, sentence, '')
+                name = buildName(name0 + name1, sentence)
+
+                if name.first_name == '':
+                    continue
 
                 # 如果简体的笔画数超出限定范围，则不要
                 if name.stroke_number1 < min_stroke_count and name.stroke_number1 > max_stroke_count and \
                         name.stroke_number2 < min_stroke_count and name.stroke_number2 > max_stroke_count:
-                    print('continue1')
                     continue
 
                 # 性别过滤
                 if name_validate and gender != "" and name.gender != gender and name.gender != "双" and name.gender != "未知":
-                    print(gender, name.gender)
-                    print('continue2')
                     continue
 
                 # 不喜欢字过滤
                 if contain_bad_word(name.first_name):
-                    print('continue3')
                     continue
-                
-                print('add name', name)
+
                 names.add(name)
+                
             if len(names) == nameCondition.count:
                 break
+
+
+def buildName(firstName, sentence):
+    name = Name(firstName, sentence, '')
+    if name_validate:
+        if firstName in exist_name.keys():
+            name.gender = exist_name[firstName]
+        else:
+            name.first_name = ''
+    return name
 
 
 # 判断是否为汉字
