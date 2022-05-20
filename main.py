@@ -15,7 +15,6 @@ import flask
 import json
 from flask import request
 from resource_cache import init_libs
-from tool import convert_zhouyi_s2c
 from name_condition import NameCondition
 
 server = flask.Flask(__name__)

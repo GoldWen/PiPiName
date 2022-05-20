@@ -7,7 +7,7 @@ from name import Name
 from stroke_number import get_stroke_number
 # from resource_cache import zjw
 
-from resource_cache import zhouyi_line_list
+from resource_cache import zhouyi_line_list,chuci_line_list
 from resource_cache import exist_name_lib_dict as exist_name
 from wuge import check_wuge_config, get_stroke_list
 from config import name_source, last_name, dislike_words, \
@@ -27,9 +27,11 @@ def get_names(nameCondition):
     stroke_list = get_stroke_list(lastName, allow_general)
     print(stroke_list)
     names = set()
-    if source == 4:
+    if source == 2:
+        print('>>从楚辞生成名字...一共', len(chuci_line_list), '行')
+        get_name_txt_from_lines(chuci_line_list, names, nameCondition)    
+    elif source == 4:
         print('>>从周易生成名字...一共', len(zhouyi_line_list), '行')
-        # get_name_txt('周易', names, stroke_list)
         get_name_txt_from_lines(zhouyi_line_list, names, nameCondition)
     return names
 

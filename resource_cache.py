@@ -6,12 +6,16 @@
 
 exist_name_lib_dict = dict()
 zhouyi_line_list = list()
+chuci_line_list = list()
+
 
 def init_libs():
     print('>>开始初始化资源')
     init_exist_name_lib()
     init_zhouyi_text()
+    init_chuci_text()
     print('>>结束初始化资源')
+
 
 def init_exist_name_lib():
     print('>>加载名字库...')
@@ -28,19 +32,24 @@ def init_exist_name_lib():
                 exist_name_lib_dict[name] = gender
 
     size = len(exist_name_lib_dict)
-    print('>>完成加载名字:',size)
+    print('>>完成加载名字:', size)
+
 
 def init_zhouyi_text():
-    print('>>加载周易文本...')
+    init_text('周易', 'zhouyi', zhouyi_line_list)
 
-    global zhouyi_line_list
-    with open('data/' + '周易_繁' + '.txt', encoding='utf-8') as f:
+
+def init_chuci_text():
+    init_text('楚辞', 'chuci', chuci_line_list)
+
+
+def init_text(type, typechars, linelist):
+    print('>>加载', type, '文本...')
+
+    # global chuci_line_list
+    with open('data/' + type + '_繁.txt', encoding='utf-8') as f:
         line_list = f.readlines()
         size = len(line_list)
         for i in range(0, size):
-            zhouyi_line_list.append(line_list[i])
-
-        # zhouyi_line_list = f.readlines()
-        
-    print('>>完成加载周易文本:',len(zhouyi_line_list))   
-        
+            linelist.append(line_list[i])
+    print('>>完成加载', type, '文本:', len(zhouyi_line_list))
