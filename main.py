@@ -73,37 +73,21 @@ def namelist():
     dataNames = []
     nameCondition = NameCondition(lastName, gender, nameSource, count)
     print('请求参数:', nameCondition.lastName, nameCondition.gender, nameCondition.nameSource, nameCondition.count)
-    with open("names.txt", "w+", encoding='utf-8') as f:
-        # for i in get_source(int(nameSource), name_validate, get_stroke_list(lastName, allow_general), gender):
-        for i in get_names(nameCondition):
-            # 条件过滤已经在生成名字的过程中处理了，这里不再过滤
-            # if i.stroke_number1 < min_stroke_count or i.stroke_number1 > max_stroke_count or \
-            #         i.stroke_number2 < min_stroke_count or i.stroke_number2 > max_stroke_count:
-            #     # 笔画数过滤
-            #     continue
-            # if name_validate and gender != "" and i.gender != gender and i.gender != "双" and i.gender != "未知":
-            #     # 性别过滤
-            #     continue
-            # if contain_bad_word(i.first_name):
-            #     # 不喜欢字过滤
-            #     continue
-
-            item = {}
-            item['namer'] = str(lastName + i.first_name)
-            item['stroke_number1'] = i.stroke_number1
-            item['stroke_number2'] = i.stroke_number2
-            item['gender'] = i.gender
-            item['source'] = i.source
-            names.append(i)
-            dataNames.append(item)
-        print(">>输出结果...")
-        names.sort()
-        for i in names:
-            f.write(lastName + str(i) + "\n")
-        print(">>输出完毕，请查看「names.txt」文件")
-        data = dataNames
-        resu = {'code': 200, 'message': 'success', 'data': data}
-        return json.dumps(resu, ensure_ascii=False)
+    for i in get_names(nameCondition):
+        item = {}
+        item['namer'] = str(lastName + i.first_name)
+        item['stroke_number1'] = i.stroke_number1
+        item['stroke_number2'] = i.stroke_number2
+        item['gender'] = i.gender
+        item['source'] = i.source
+        names.append(i)
+        dataNames.append(item)
+    print(">>输出结果...")
+    names.sort()
+    print(">>输出完毕，请查看「names.txt」文件")
+    data = dataNames
+    resu = {'code': 200, 'message': 'success', 'data': data}
+    return json.dumps(resu, ensure_ascii=False)
 
 
 @server.route('/rest/healthy/test', methods=['get', 'post'])

@@ -1,0 +1,7 @@
+GET http://localhost:9021/rest/namer/list?lastName=钟&gender=男&nameSource=2&count=5 HTTP/1.1
+content-type: application/json
+
+{
+    "name": "larry",
+    "age": 18
+}
