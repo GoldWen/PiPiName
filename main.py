@@ -72,7 +72,8 @@ def namelist():
     names = []
     dataNames = []
     nameCondition = NameCondition(lastName, gender, nameSource, count)
-    print('请求参数:', nameCondition.lastName, nameCondition.gender, nameCondition.nameSource, nameCondition.count)
+    print('请求参数:', nameCondition.lastName, nameCondition.gender,
+          nameCondition.nameSource, nameCondition.count)
     for i in get_names(nameCondition):
         item = {}
         item['namer'] = str(lastName + i.first_name)
@@ -80,6 +81,7 @@ def namelist():
         item['stroke_number2'] = i.stroke_number2
         item['gender'] = i.gender
         item['source'] = i.source
+        item['title'] = i.title
         names.append(i)
         dataNames.append(item)
     print(">>输出结果...")

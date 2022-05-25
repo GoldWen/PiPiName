@@ -63,6 +63,7 @@ def get_name_txt_from_jsons(json_list, stroke_list, names, nameCondition):
         src_idx = (start+i) % json_length
         poet = json_list[src_idx]
         sentences = poet['content']
+        title = poet['title']
         sentence_len = len(sentences)
 
         for j in range(0, sentence_len):
@@ -88,7 +89,7 @@ def get_name_txt_from_jsons(json_list, stroke_list, names, nameCondition):
                     if index0 < index1:
                         name0 = sentence[index0]
                         name1 = sentence[index1]
-                        name = buildName(name0 + name1, sentence)
+                        name = buildName(name0 + name1, title, sentence)
 
                         if name.first_name == '':
                             continue
@@ -329,8 +330,8 @@ def check_and_add_names_from_sentence(names, sentence, stroke_list, nameConditio
                 break
 
 
-def buildName(firstName, sentence):
-    name = Name(firstName, sentence, '')
+def buildName(firstName, title, sentence):
+    name = Name(firstName, title, sentence, '')
     if name_validate:
         if firstName in exist_name.keys():
             name.gender = exist_name[firstName]

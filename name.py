@@ -4,12 +4,13 @@ from stroke_number import get_stroke_number
 
 
 class Name:
-    __slots__ = "first_name", "stroke_number1", "stroke_number2", "count", "source", "gender"
+    __slots__ = "first_name", "stroke_number1", "stroke_number2", "count", "title", "source", "gender"
 
-    def __init__(self, first_name, source, gender):
+    def __init__(self, first_name, title, source, gender):
         self.stroke_number1 = get_stroke_number(first_name[0])
         self.stroke_number2 = get_stroke_number(first_name[1])
         self.count = len(first_name)
+        self.title = title
         self.source = source.replace(first_name[0], "「" + first_name[0] + "」") \
             .replace(first_name[1], "「" + first_name[1] + "」")
         self.gender = gender
