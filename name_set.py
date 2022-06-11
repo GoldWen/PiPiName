@@ -26,7 +26,7 @@ def get_names(nameCondition):
     lastName = nameCondition.lastName
     source = int(nameCondition.nameSource)
     stroke_list = get_stroke_list(lastName, allow_general)
-    print(stroke_list)
+    # print(stroke_list)
     names = set()
 
     if source == 2:

@@ -1,4 +1,13 @@
-GET http://localhost:9021/rest/namer/list?lastName=钟&gender=男&nameSource=2&count=5 HTTP/1.1
+GET http://localhost:9021/rest/namer/list?lastName=钟&gender=男&nameSource=1&count=5 HTTP/1.1
+content-type: application/json
+
+{
+    "name": "larry",
+    "age": 18
+}
+
+###
+GET http://52sxw.cn:445/rest/namer/list?lastName=钟&gender=男&nameSource=1&count=5 HTTP/1.1
 content-type: application/json
 
 {
