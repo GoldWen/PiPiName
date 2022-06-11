@@ -10,10 +10,11 @@ stroke_generals = [27, 38, 42, 55, 58, 71, 72, 73, 77, 78]
 stroke_bads = [2, 4, 9, 10, 12, 14, 19, 20, 22, 26, 28, 30, 34, 36, 40, 43, 44, 46, 49, 50, 51, 53, 54, 56, 59, 60, 62,
                64, 66, 69, 70, 74, 75, 76, 79, 80]
 
-stroke_list = list()
+# stroke_list = list()
 
 
 def get_stroke_list(last_name, allow_general):
+    stroke_list = list()
     print(">>计算笔画组合...")
     # 姓氏转繁体
     converter = OpenCC('s2t')
